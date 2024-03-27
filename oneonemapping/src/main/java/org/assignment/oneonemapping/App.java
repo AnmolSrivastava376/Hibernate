@@ -1,15 +1,12 @@
 package org.assignment.oneonemapping;
 
-import java.util.List;
-
 import org.assignment.config.HibernateUtil;
 import org.assignment.entity.RiotAccount;
 import org.assignment.entity.ValorantAccount;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import jakarta.persistence.Query;
-import jakarta.persistence.TypedQuery;
+import java.util.List;
 
 public class App {
     public static void main(String[] args) {
@@ -22,43 +19,75 @@ public class App {
                     + "\n-------------------------------------------------------------------------------------------------");
 
             // First Sample Data
-            RiotAccount riotAccount1 = new RiotAccount("Thunder376", "thunder123");
+            RiotAccount riotAccount1 = new RiotAccount("t#001","Thunder376", "thunder123");
+            ValorantAccount valorantAccount1 = new ValorantAccount("Anmol");
+            riotAccount1.setValorantAccount(valorantAccount1);
+            valorantAccount1.setRiotAccount(riotAccount1);
             session.persist(riotAccount1);
-            ValorantAccount valorantAccount1 = new ValorantAccount("Anmol",riotAccount1.getId());
             session.persist(valorantAccount1);
 
             // Second Sample Data
-            RiotAccount riotAccount2 = new RiotAccount("SkyKnight", "sky123");
+            RiotAccount riotAccount2 = new RiotAccount("s#005","SkyKnight", "sky123");
+            ValorantAccount valorantAccount2 = new ValorantAccount("Vishal");
+            riotAccount1.setValorantAccount(valorantAccount1);
+            valorantAccount2.setRiotAccount(riotAccount2);
             session.persist(riotAccount2);
-            ValorantAccount valorantAccount2 = new ValorantAccount("Vishal", riotAccount2.getId());
             session.persist(valorantAccount2);
 
             // Third Sample Data
-            RiotAccount riotAccount3 = new RiotAccount("FireBlaze", "fire123");
+            RiotAccount riotAccount3 = new RiotAccount("f#013","FireBlaze", "fire123");
+            ValorantAccount valorantAccount3 = new ValorantAccount("Ritk");
+            riotAccount1.setValorantAccount(valorantAccount1);
+            valorantAccount3.setRiotAccount(riotAccount3);
             session.persist(riotAccount3);
-            ValorantAccount valorantAccount3 = new ValorantAccount("Ritk", riotAccount3.getId());
             session.persist(valorantAccount3);
-            
-            TypedQuery<Object[]> query = session.createQuery(
-            	    "SELECT r, v FROM RiotAccount r INNER JOIN ValorantAccount v ON r.id = v.id", Object[].class);
-            List<Object[]> results = query.getResultList();
+
+            List<Object[]> results = session.createQuery(
+                    "SELECT r, v FROM RiotAccount r JOIN r.valorantAccount v", Object[].class)
+                    .getResultList();
+
             System.out.println("\n-----------------------------------------------------------------------------------------------\n");
             for (Object[] result : results) {
-                RiotAccount riotAccount = (RiotAccount) result[0];
                 ValorantAccount valorantAccount = (ValorantAccount) result[1];
-                System.out.println("ID: " + riotAccount.getId() + ", Username: " + riotAccount.getUsername() + ", Valorant Username: " + valorantAccount.getValorantUsername());
-            }
-            
-            try {
-            	ValorantAccount copyAccount = new ValorantAccount("CopyOfRitik", riotAccount3.getId());
-                session.persist(copyAccount);
-            }
-            catch(Exception e) {
-            	System.out.println("Error : "+e);
+                System.out.println(
+                		"Riot Account ID: " + valorantAccount.getRiotAccount().getRiotUniqueId() +
+                        ", Username: " + valorantAccount.getRiotAccount().getUsername() +
+                        ", Valorant Account ID: " + valorantAccount.getId() +
+                        ", Valorant Username: " + valorantAccount.getValorantUsername());
             }
 
+            System.out.println("\n-----------------------------------------------------------------------------------------------\n");
+            
+            RiotAccount riotAccountToDelete = session.get(RiotAccount.class, riotAccount1.getRiotUniqueId());
+            session.remove(riotAccountToDelete);
+
+            results = session.createQuery(
+                    "SELECT r, v FROM RiotAccount r JOIN r.valorantAccount v", Object[].class)
+                    .getResultList();
+
+            System.out.println("\n-----------------------------------------------------------------------------------------------\n");
+            for (Object[] result : results) {
+                ValorantAccount valorantAccount = (ValorantAccount) result[1];
+                System.out.println(
+                		"Riot Account ID: " + valorantAccount.getRiotAccount().getRiotUniqueId() +
+                        ", Username: " + valorantAccount.getRiotAccount().getUsername() +
+                        ", Valorant Account ID: " + valorantAccount.getId() +
+                        ", Valorant Username: " + valorantAccount.getValorantUsername());
+            }
+            
+
+            System.out.println("\n-----------------------------------------------------------------------------------------------\n");
+            
+            // Trying to attach 2 riot accounts to same valorant id
+            try {
+            	RiotAccount riotAccountCopy = new RiotAccount("z#201","Zero123", "024csf");
+                riotAccountCopy.setValorantAccount(valorantAccount1);
+                session.persist(riotAccountCopy);
+            	
+            }catch(Exception e) {
+            	System.out.println("Error : "+e);
+            }
             transaction.commit();
-            session.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

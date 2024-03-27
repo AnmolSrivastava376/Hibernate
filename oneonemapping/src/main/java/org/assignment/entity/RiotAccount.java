@@ -7,9 +7,8 @@ import jakarta.persistence.*;
 public class RiotAccount {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
+    @Column(name = "riot_unique_id")
+    private String riotUniqueId;
 
     @Column(name = "username")
     private String username;
@@ -17,20 +16,32 @@ public class RiotAccount {
     @Column(name = "password")
     private String password;
 
+    @OneToOne(mappedBy = "riotAccount", cascade = CascadeType.ALL)
+    private ValorantAccount valorantAccount;
+
+    public ValorantAccount getValorantAccount() {
+        return valorantAccount;
+    }
+
+    public void setValorantAccount(ValorantAccount valorantAccount) {
+        this.valorantAccount = valorantAccount;
+    }
+
     public RiotAccount() {
     }
 
-    public RiotAccount(String username, String password) {
+    public RiotAccount(String riotUniqueId, String username, String password) {
+        this.riotUniqueId = riotUniqueId;
         this.username = username;
         this.password = password;
     }
 
-    public int getId() {
-        return id;
+    public String getRiotUniqueId() {
+        return riotUniqueId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setRiotUniqueId(String riotUniqueId) {
+        this.riotUniqueId = riotUniqueId;
     }
 
     public String getUsername() {
@@ -52,7 +63,7 @@ public class RiotAccount {
     @Override
     public String toString() {
         return "RiotAccount{" +
-                "id=" + id +
+                "riotUniqueId='" + riotUniqueId + '\'' +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 '}';

@@ -7,18 +7,30 @@ import jakarta.persistence.*;
 public class ValorantAccount {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
 
     @Column(name = "username")
     private String valorantUsername;
 
+    @OneToOne
+    @JoinColumn(name = "riot_unique_id")
+    private RiotAccount riotAccount;
+
+    public RiotAccount getRiotAccount() {
+        return riotAccount;
+    }
+
+    public void setRiotAccount(RiotAccount riotAccount) {
+        this.riotAccount = riotAccount;
+    }
+
     public ValorantAccount() {
     }
 
-    public ValorantAccount(String valorantUsername, int id) {
+    public ValorantAccount(String valorantUsername) {
         this.valorantUsername = valorantUsername;
-        this.id=id;
     }
 
     public int getId() {
@@ -40,7 +52,7 @@ public class ValorantAccount {
     @Override
     public String toString() {
         return "ValorantAccount{" +
-                "id=" + id +
+                "ValorantId=" + id +
                 ", valorantUsername='" + valorantUsername + '\'' +
                 '}';
     }

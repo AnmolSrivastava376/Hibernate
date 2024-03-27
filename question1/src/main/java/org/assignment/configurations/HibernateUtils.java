@@ -10,7 +10,6 @@ import org.assignment.entity.Employee;
 
 import java.util.Properties;
 
-
 public class HibernateUtils {
 
     public static SessionFactory getSessionFactory(){
