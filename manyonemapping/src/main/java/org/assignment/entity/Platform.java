@@ -1,5 +1,7 @@
 package org.assignment.entity;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -9,6 +11,9 @@ public class Platform {
     private int id;
     private String name;
 
+    @OneToMany(mappedBy = "platform")
+    private List<Player> players;	
+    
     public Platform() {}
 
     public Platform(String name) {
